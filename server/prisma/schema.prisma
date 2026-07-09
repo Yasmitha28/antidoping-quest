@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int      @id @default(autoincrement())
+  email           String   @unique
+  password        String
+  name            String
+  role            String   @default("USER")
+  xp              Int      @default(0)
+  level           Int      @default(1)
+  streak          Int      @default(0)
+  badges          String[] @default([])
+  avatarUrl       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  progress        Progress[]
+  quizAttempts    QuizAttempt[]
+  challenges      ChallengeProgress[]
+  certificates    Certificate[]
+}
+
+model Progress {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  moduleId      Int
+  module        Module   @relation(fields: [moduleId], references: [id])
+  completed     Boolean  @default(false)
+  score         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, moduleId])
+}
+
+model Module {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String
+  category      String
+  xpReward      Int      @default(50)
+  duration      Int      @default(10)
+  content       String
+  createdAt     DateTime @default(now())
+  progress      Progress[]
+}
+
+model Quiz {
+  id            Int      @id @default(autoincrement())
+  title         String
+  question      String
+  options       String[]
+  correctAnswer Int
+  xpReward      Int      @default(25)
+  createdAt     DateTime @default(now())
+  attempts      QuizAttempt[]
+}
+
+model QuizAttempt {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  quizId        Int
+  quiz          Quiz     @relation(fields: [quizId], references: [id])
+  correct       Boolean
+  score         Int      @default(0)
+  createdAt     DateTime @default(now())
+}
+
+model Challenge {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String
+  xpReward      Int      @default(100)
+  difficulty    String   @default("MEDIUM")
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  progress      ChallengeProgress[]
+}
+
+model ChallengeProgress {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  challengeId   Int
+  challenge     Challenge @relation(fields: [challengeId], references: [id])
+  completed     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, challengeId])
+}
+
+model Certificate {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  title         String
+  description   String
+  percentage    Int
+  score         Int
+  issuedAt      DateTime @default(now())
+}
