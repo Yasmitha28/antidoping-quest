@@ -68,6 +68,12 @@ npm start
 
 The main objective of this project is to spread awareness about anti-doping rules through an engaging gamified learning platform where users can improve their knowledge while earning rewards and tracking their progress.
 
+ ## 👩‍💻 Developed By
+
+**Yasmitha**
+
+Computer Science Engineering Student
+
 ## 📄 License
 
 This project is developed for educational and academic purposes.
